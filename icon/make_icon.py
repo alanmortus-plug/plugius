@@ -1,28 +1,27 @@
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# Той самий знак, що в хедері (app/ui.html, .pmark): чотири P одна за одною
+P_SHAPE = "M26 16H56A22 22 0 0 1 56 60H44V84H26ZM44 31V45H55A7 7 0 0 0 55 31Z"
+LAYERS = (("Or", "#FF9A1F", "#E86A00"), ("Vi", "#9B5CFF", "#6A2BE0"), ("Co", "#FF5244", "#D62A1E"), ("Az", "#2E90FF", "#0D5FD6"))
 DEFS = '''<defs>
  <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#232C35"/><stop offset="1" stop-color="#090C10"/></linearGradient>
  <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
- <linearGradient id="s0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFE0FF"/><stop offset=".55" stop-color="#4FA8FF"/><stop offset="1" stop-color="#1F6FCC"/></linearGradient>
- <linearGradient id="s1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD2CC"/><stop offset=".55" stop-color="#FF6B5E"/><stop offset="1" stop-color="#D03A2E"/></linearGradient>
- <linearGradient id="s2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3D2FF"/><stop offset=".55" stop-color="#A97CFF"/><stop offset="1" stop-color="#7240D6"/></linearGradient>
- <linearGradient id="s3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE3B8"/><stop offset=".55" stop-color="#FFA63D"/><stop offset="1" stop-color="#D97706"/></linearGradient>
- <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="22" stdDeviation="22" flood-color="#000" flood-opacity=".45"/></filter>
-</defs>'''
+ %s
+ <filter id="shadow" x="-20%%" y="-20%%" width="140%%" height="150%%"><feDropShadow dx="0" dy="22" stdDeviation="22" flood-color="#000" flood-opacity=".45"/></filter>
+</defs>''' % "\n ".join(
+    '<linearGradient id="p%s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%s"/><stop offset="1" stop-color="%s"/></linearGradient>' % layer for layer in LAYERS)
 
 
-EDGES = ("#0E3F7A", "#7A1C15", "#3F1F85", "#7F4400")
-
-
-def slot(y, i):
-    # Об'єм: темний нижній край, градієнт корпусу, блик зверху; лампочка на другій смужці
-    s = '<rect x="212" y="%d" width="600" height="118" rx="34" fill="%s"/>' % (y + 14, EDGES[i])
-    s += '<rect x="212" y="%d" width="600" height="118" rx="34" fill="url(#s%d)"/>' % (y, i)
-    s += '<rect x="238" y="%d" width="548" height="20" rx="10" fill="#fff" opacity=".4"/>' % (y + 10)
-    if i == 1:
-        s += '<circle cx="272" cy="%d" r="26" fill="#3A0D08"/><circle cx="264" cy="%d" r="7" fill="#fff" opacity=".8"/>' % (y + 62, y + 54)
-    return s
+def mark():
+    # Знак 66.1 на 82.1 вписано по центру плитки: темний контур під кожним шаром розділяє кольори
+    scale = 7.2
+    s = '<g transform="translate(%.1f %.1f) scale(%s)">' % (512 - (26 + 66.1 / 2) * scale, 512 - (1.9 + 82.1 / 2) * scale, scale)
+    for i, (name, _, _) in enumerate(LAYERS):
+        off = (3 - i) * 4.7
+        s += ('<g transform="translate(%.1f %.1f)"><path d="%s" fill="none" stroke="#090C10" stroke-width="2.4"/>'
+              '<path d="%s" fill="url(#p%s)" fill-rule="evenodd"/></g>') % (off, -off, P_SHAPE, P_SHAPE, name)
+    return s + "</g>"
 
 
 def tile():
@@ -30,11 +29,18 @@ def tile():
             '<rect x="103" y="103" width="818" height="818" rx="185" fill="none" stroke="url(#rim)" stroke-width="6"/>')
 
 
-big = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">\n%s\n%s\n%s\n</svg>' % (
-    DEFS, tile(), "\n".join(slot(225 + 152 * i, i) for i in range(4)))
+big = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">\n%s\n%s\n%s\n</svg>' % (DEFS, tile(), mark())
 open(os.path.join(HERE, "icon.svg"), "w").write(big)
 
-# 16 і 32 px: смуги лягають на піксельну сітку, без блику й лампочки, які там лише розмиваються
-bars = "".join('<rect x="3" y="%d" width="10" height="2" fill="%s"/>' % (3 + 3 * i, ("#4FA8FF", "#FF6B5E", "#A97CFF", "#FFA63D")[i]) for i in range(4))
-small = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="512" height="512"><rect x="1" y="1" width="14" height="14" rx="3" fill="#10151A"/>%s</svg>' % bars
+
+def small_p(x, y, color):
+    # P на піксельній сітці: ніжка, верхня й нижня перекладини, права стінка
+    rects = ((x, y, 2, 8), (x, y, 5, 1), (x + 5, y + 1, 1, 2), (x, y + 3, 5, 1))
+    return "".join('<rect x="%d" y="%d" width="%d" height="%d" fill="%s"/>' % (rx, ry, w, h, color) for rx, ry, w, h in rects)
+
+
+# 16 і 32 px: градієнти й контури там лише розмиваються, тому шари лягають на піксельну сітку суцільними кольорами
+layers = "".join(small_p(3 + off, 5 - off, color) for off, color in ((3, "#FF9A1F"), (2, "#9B5CFF"), (1, "#FF5244")))
+small = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="512" height="512"><rect x="1" y="1" width="14" height="14" rx="3" fill="#10151A"/>'
+         '%s%s<rect x="5" y="6" width="3" height="2" fill="#10151A"/></svg>') % (layers, small_p(3, 5, "#2E90FF"))
 open(os.path.join(HERE, "icon_small.svg"), "w").write(small)
