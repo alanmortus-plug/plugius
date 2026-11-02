@@ -51,10 +51,10 @@ button{background:var(--chip);color:var(--ink);border:1px solid var(--strong);bo
 button:hover{background:var(--line)}
 button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 button:disabled{opacity:.5;cursor:default}
-nav{position:relative;display:flex;align-items:center;gap:4px;padding:0 28px;background:var(--panel);border-bottom:1px solid var(--line)}
-nav a{padding:10px 14px;cursor:pointer;color:var(--mute);border-bottom:2px solid transparent;transition:color .18s ease,border-color .18s ease}
+nav{position:relative;display:flex;align-items:center;gap:4px;margin:14px 28px 0;padding:6px;background:var(--card);border:1px solid var(--edge);border-radius:14px;box-shadow:0 1px 3px var(--cardshadow)}
+nav a{padding:7px 14px;cursor:pointer;color:var(--mute);border-radius:9px;transition:color .18s ease,background-color .18s ease,box-shadow .18s ease}
 nav a:hover{color:var(--bright)}
-nav a.on{color:var(--bright);border-color:var(--steel)}
+nav a.on{color:var(--bright);background:var(--inset);box-shadow:inset 0 0 0 1px var(--edge)}
 #scanState{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;pointer-events:none}
 #scanState .progress{width:220px;margin:4px auto 0}
 @media(max-width:900px){#scanState{position:static;transform:none;margin-left:auto}}
@@ -135,13 +135,14 @@ tr.file td:last-child .fc>div{padding-right:20px}
 .legend i{flex:none;width:10px;height:10px;border-radius:50%}
 .legend b{font-weight:500;color:var(--head-ink)}
 tr.grp td{padding:14px 21px 8px}
-tr.grp b{font:600 24px/1.1 var(--display);color:var(--mute);margin-right:12px}
+tr.grp b{font:600 24px/1.1 var(--display);color:var(--blue);margin-right:12px}
+.vendor{color:var(--blue);transition:color .2s ease}
 .lic-file,.lic-manual{color:var(--ok)} .lic-hint{color:var(--new)} .lic-none{color:var(--mute)}
 .empty{padding:48px;text-align:center;color:var(--mute);background:var(--panel);border:1px dashed var(--strong);border-radius:12px}
-#drawer{position:fixed;top:0;right:0;width:520px;max-width:100vw;height:100vh;background:var(--panel);border-left:1px solid var(--line);box-shadow:-8px 0 30px var(--shadow);transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);z-index:10;overflow:auto;padding:18px 20px 40px}
-#drawer.open{transform:none}
+#drawer{position:fixed;top:8px;right:8px;width:520px;max-width:calc(100vw - 16px);height:calc(100vh - 16px);background:var(--bg);border:1px solid var(--edge);border-radius:14px;transform:translateX(calc(100% + 16px));transition:transform .26s cubic-bezier(.2,.8,.2,1),box-shadow .26s ease;z-index:10;overflow:auto;padding:18px 20px 40px}
+#drawer.open{transform:none;box-shadow:-8px 0 30px var(--shadow)}
 #drawer h2{margin:0 0 2px;font:600 38px/1.05 var(--display);color:var(--bright);overflow-wrap:anywhere}
-.kv{display:grid;grid-template-columns:130px 1fr;gap:6px 12px;margin:14px 0}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:6px 12px}
 .kv div:nth-child(odd){color:var(--mute)}
 .kv div{overflow-wrap:anywhere}
 .field{margin:12px 0}
@@ -150,13 +151,13 @@ tr.grp b{font:600 24px/1.1 var(--display);color:var(--mute);margin-right:12px}
 textarea{min-height:64px;resize:vertical}
 .hint{color:var(--mute);font-size:12.5px;margin-top:3px}
 .row-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.panel{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px}
-#tab-settings .panel{background:var(--panel)}
+.panel,.kv{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:14px 16px;margin:0 0 12px;box-shadow:0 1px 3px var(--cardshadow)}
+.kv{margin-top:14px}
 .panel h3{margin:0 0 8px;font:600 22px/1.1 var(--display);color:var(--bright)}
-.fileitem{border-top:1px solid var(--line);padding:8px 0}
-.fileitem:first-of-type{border-top:0}
+.fileitem{background:var(--inset);border-radius:10px;padding:10px 12px;margin-top:8px}
+.fileitem code{background:var(--card)}
 .fileitem .tag{font-weight:600}
-.scan{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:12px;padding:12px 16px}
+.scan{border:1px solid var(--edge);border-radius:14px;background:var(--card);margin-bottom:12px;padding:12px 16px}
 .k-new{color:var(--ok)} .k-new-file{color:var(--new)} .k-removed{color:var(--bad)} .k-updated{color:var(--warn)} .k-moved,.k-returned{color:var(--blue)}
 .progress{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:6px}
 .progress i{display:block;height:100%;width:40%;background:var(--steel);animation:slide 1.1s infinite ease-in-out}
@@ -343,7 +344,7 @@ function productRow(p, maxSize) {
   const vf = viewFiles(p), many = p.files.length > 1, open = S.expanded.has(p.id), size = viewSize(p);
   const info = [nFiles(vf.length), p.category, p.versions.length ? "v" + p.versions.join(", ") : ""].filter(Boolean).join(" · ");
   const tw = many ? `<button class="tw ${open ? "open" : ""}" data-tw="${p.id}" aria-expanded="${open}" aria-label="${open ? "Згорнути" : "Розгорнути"} файли" title="Показати файли">▶</button>` : "";
-  const vendor = S.group ? "" : `<td>${esc(p.vendor_eff)}${p.vendor_manual ? "" : (p.vendor_src && /припущ/.test(p.vendor_src) ? ' <span class="sub" title="Виробника вгадано: ' + esc(p.vendor_src) + '">?</span>' : "")}</td>`;
+  const vendor = S.group ? "" : `<td><span class="vendor">${esc(p.vendor_eff)}</span>${p.vendor_manual ? "" : (p.vendor_src && /припущ/.test(p.vendor_src) ? ' <span class="sub" title="Виробника вгадано: ' + esc(p.vendor_src) + '">?</span>' : "")}</td>`;
   let html = `<tr class="row ${vf.length ? "" : "gone"} ${p.is_new ? "isnew" : ""}" data-id="${p.id}">
     <td><div class="name">${tw}${esc(p.name)}${newTag(p)}${p.stock ? ' <span class="tag stock">штатний</span>' : ""}</div><div class="sub">${esc(info)}</div></td>
     ${vendor}
@@ -432,7 +433,7 @@ function openDrawer(id, keepScroll) {
   const lic = p.license_auto.map(x => `<div style="margin-bottom:8px"><b>${esc(x.label)}</b><div class="sub">${esc(x.text)}</div>` +
     (x.paths || []).map(pp => `<div class="sub"><code>${esc(pp)}</code></div>`).join("") + `</div>`).join("") || `<div class="sub">Автоматично нічого не знайдено — впишіть вручну нижче.</div>`;
   $("#drawer").innerHTML = `
-    <div style="display:flex;justify-content:space-between;gap:8px"><div><h2>${esc(p.name)}</h2><div class="sub">${esc(p.vendor_eff)} · ${esc(p.formats.join(", "))}${p.versions.length ? " · v" + esc(p.versions.join(", ")) : ""}</div></div><button id="dClose" aria-label="Закрити" title="Закрити"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button></div>
+    <div style="display:flex;justify-content:space-between;gap:8px"><div><h2>${esc(p.name)}</h2><div class="sub"><span class="vendor">${esc(p.vendor_eff)}</span> · ${esc(p.formats.join(", "))}${p.versions.length ? " · v" + esc(p.versions.join(", ")) : ""}</div></div><button id="dClose" aria-label="Закрити" title="Закрити"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button></div>
     <div class="kv">
       <div>Розмір</div><div>${fmtSize(p.size_bytes)}${many ? " · " + nFiles(p.file_count) : ""}</div>
       <div>Платформа</div><div>${esc(p.platforms.join(", ") || "—")}</div>
@@ -444,13 +445,14 @@ function openDrawer(id, keepScroll) {
     </div>
     <div class="panel"><h3>${many ? "Файли" : "Файл"}</h3>${p.files.map(fileItem).join("")}</div>
     <div class="panel"><h3>Ліцензія (автоматично)</h3>${lic}</div>
-    ${many ? `<div class="hint">Поля нижче спільні для всіх файлів продукту.</div>` : ""}
+    <div class="panel"><h3>Вручну</h3>${many ? `<div class="hint">Ці поля спільні для всіх файлів продукту.</div>` : ""}
     <div class="field"><label>Виробник (якщо визначився неправильно)</label><input type="text" id="fVendor" value="${esc(p.vendor_manual)}" placeholder="${esc(p.vendor || "")}">${mix("vendor_manual")}</div>
     <div class="field"><label>Звідки скачана</label><input type="text" id="fSource" value="${esc(p.source_manual)}" placeholder="${esc(p.source_auto || "сайт, магазин, лінк на обліковий запис…")}"><div class="hint">Авто: ${esc(p.source_auto || "не визначено")}</div>${mix("source_manual")}</div>
     <div class="field"><label>Ліцензія: де подивитись</label><textarea id="fLic" placeholder="Напр.: Waves Central → Licenses; або лист на пошті від ...">${esc(p.license_manual)}</textarea>${mix("license_manual")}</div>
     <div class="field"><label>Короткий опис</label><textarea id="fDesc" placeholder="${esc(p.description_auto)}">${esc(p.description_manual)}</textarea><div class="hint">Авто: ${esc(p.description_auto)}</div>${mix("description_manual")}</div>
     <div class="field"><label>Нотатки</label><textarea id="fNotes">${esc(p.notes)}</textarea>${mix("notes")}</div>
     <div class="field"><label>Штатний плагін?</label><select id="fStockSel"><option value="">Авто (${p.is_stock ? "штатний" : "не штатний"})</option><option value="1">Так — ховати</option><option value="0">Ні — показувати</option></select></div>
+    </div>
     <div class="row-actions"><button class="primary" id="dSave">Зберегти</button></div>`;
   const stockNow = p.stock_override === null || p.stock_override === undefined ? "" : String(p.stock_override);
   $("#fStockSel").value = stockNow;
