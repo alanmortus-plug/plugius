@@ -13,7 +13,7 @@ def shot(name, size):
     src, out = os.path.join(tmp, name + ".svg"), os.path.join(tmp, name + ".png")
     shutil.copy(os.path.join(HERE, name + ".svg"), src)
     subprocess.run([CHROME, "--headless", "--disable-gpu", "--hide-scrollbars", "--default-background-color=00000000",
-                    "--user-data-dir=" + os.path.join(tmp, "profile"), "--screenshot=" + out,
+                    "--user-data-dir=" + os.path.join(tmp, "profile"), "--virtual-time-budget=3000", "--screenshot=" + out,
                     "--window-size=%d,%d" % (size, size), "file://" + src], check=True, capture_output=True)
     return out
 
