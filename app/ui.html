@@ -344,7 +344,7 @@ function productRow(p, maxSize) {
   const vf = viewFiles(p), many = p.files.length > 1, open = S.expanded.has(p.id), size = viewSize(p);
   const info = [nFiles(vf.length), p.category, p.versions.length ? "v" + p.versions.join(", ") : ""].filter(Boolean).join(" · ");
   const tw = many ? `<button class="tw ${open ? "open" : ""}" data-tw="${p.id}" aria-expanded="${open}" aria-label="${open ? "Згорнути" : "Розгорнути"} файли" title="Показати файли">▶</button>` : "";
-  const vendor = S.group ? "" : `<td><span class="vendor">${esc(p.vendor_eff)}</span>${p.vendor_manual ? "" : (p.vendor_src && /припущ/.test(p.vendor_src) ? ' <span class="sub" title="Виробника вгадано: ' + esc(p.vendor_src) + '">?</span>' : "")}</td>`;
+  const vendor = S.group ? "" : `<td><span class="vendor">${esc(p.vendor_eff)}</span>${p.vendor_manual ? "" : (p.vendor_src && /припущ/.test(p.vendor_src) ? '&nbsp;<span class="sub" title="Виробника вгадано: ' + esc(p.vendor_src) + '">?</span>' : "")}</td>`;
   let html = `<tr class="row ${vf.length ? "" : "gone"} ${p.is_new ? "isnew" : ""}" data-id="${p.id}">
     <td><div class="name">${tw}${esc(p.name)}${newTag(p)}${p.stock ? ' <span class="tag stock">штатний</span>' : ""}</div><div class="sub">${esc(info)}</div></td>
     ${vendor}
@@ -550,7 +550,8 @@ document.addEventListener("click", e => {
   }
   const rv = e.target.closest("[data-reveal]"); if (rv) { api("/api/reveal", {method: "POST", body: {id: Number(rv.dataset.reveal)}}).catch(ex => toast(ex.message)); return; }
   const cp = e.target.closest("[data-copy]"); if (cp) { const f = fileById(Number(cp.dataset.copy)); if (f && navigator.clipboard) navigator.clipboard.writeText(f.path); toast("Шлях скопійовано"); return; }
-  const r = e.target.closest("tr.row"); if (r) return openDrawer(Number(r.dataset.id));
+  const r = e.target.closest("tr.row");
+  if (r) { const id = Number(r.dataset.id); return S.open === id ? closeDrawer() : openDrawer(id); }
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
 $("#q").oninput = e => { S.q = e.target.value; render(); };
