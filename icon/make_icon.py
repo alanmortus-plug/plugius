@@ -1,7 +1,7 @@
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-# Той самий знак, що в хедері (app/ui.html, .pmark): чотири P одна за одною
+# Знак іконки: чотири широкі P одна за одною. У хедері шари лежать за літерою шрифту (app/ui.html, .logo)
 P_SHAPE = "M26 16H56A22 22 0 0 1 56 60H44V84H26ZM44 31V45H55A7 7 0 0 0 55 31Z"
 LAYERS = (("Or", "#FF9A1F", "#E86A00"), ("Vi", "#9B5CFF", "#6A2BE0"), ("Co", "#FF5244", "#D62A1E"), ("Az", "#2E90FF", "#0D5FD6"))
 DEFS = '''<defs>
