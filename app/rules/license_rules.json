@@ -1,0 +1,348 @@
+{
+ "_comment": "Правила пошуку ліцензій за виробником. 'vendors' — підрядки назви виробника (малими літерами, без пробілів і розділових знаків). 'products' і 'except_products' — необов'язкові підрядки назви плагіна в такому ж вигляді. 'paths' — місця файлів ліцензій (показуються, лише якщо файл існує; підтримується ~ та *). 'hint' — де дивитись ліцензію, якщо файлу немає; 'short' — коротко для таблиці. 'kind': 'free' означає, що ліцензія не потрібна. Звірено з реальним Mac 2026-11-01 лише для Native Instruments, iZotope, Celemony, Valhalla, Klevgrand, Sound Radix, Youlean, Splice; решта шляхів складена з пам'яті, виправляйте під свій комп'ютер.",
+ "rules": [
+  {
+   "label": "Waves",
+   "vendors": [
+    "waves"
+   ],
+   "kind": "file",
+   "paths": [
+    "/Library/Application Support/Waves/Licenses/*",
+    "~/Library/Application Support/Waves/Licenses/*"
+   ],
+   "hint": "Waves Central → Licenses (ліцензії прив'язані до облікового запису Waves або до iLok).",
+   "short": "Waves Central"
+  },
+  {
+   "label": "Native Instruments",
+   "vendors": [
+    "nativeinstruments"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Native Access, обліковий запис NI: там видно, чи продукт активовано. Окремого файла ліцензії на диску немає.",
+   "short": "Native Access"
+  },
+  {
+   "label": "Universal Audio",
+   "vendors": [
+    "universalaudio",
+    "uad"
+   ],
+   "kind": "account",
+   "paths": [
+    "/Library/Application Support/Universal Audio/*.lic",
+    "~/Library/Application Support/Universal Audio/*.lic"
+   ],
+   "hint": "UA Connect → ліцензії прив'язані до обладнання UAD та акаунта Universal Audio.",
+   "short": "UA Connect"
+  },
+  {
+   "label": "iZotope",
+   "vendors": [
+    "izotope"
+   ],
+   "kind": "account",
+   "paths": [
+    "/Library/Application Support/iZotope/*.lic",
+    "~/Library/Application Support/iZotope/*.lic"
+   ],
+   "hint": "iZotope Product Portal / Native Access, обліковий запис iZotope.",
+   "short": "Product Portal"
+  },
+  {
+   "label": "Plugin Alliance / Brainworx",
+   "vendors": [
+    "pluginalliance",
+    "brainworx",
+    "lindell",
+    "shadowhills",
+    "elysia",
+    "maag",
+    "bxdigital",
+    "bx"
+   ],
+   "kind": "account",
+   "paths": [
+    "~/Library/Application Support/Plugin Alliance/*",
+    "/Library/Application Support/Plugin Alliance/*"
+   ],
+   "hint": "Plugin Alliance Installation Manager (обліковий запис Plugin Alliance або iLok).",
+   "short": "Plugin Alliance"
+  },
+  {
+   "label": "FabFilter",
+   "vendors": [
+    "fabfilter"
+   ],
+   "kind": "file",
+   "paths": [
+    "~/Library/Application Support/FabFilter/*",
+    "/Library/Application Support/FabFilter/*"
+   ],
+   "hint": "Ліцензійний ключ приходить листом від FabFilter; його також видно в «Про програму» всередині плагіна.",
+   "short": "Ключ у листі"
+  },
+  {
+   "label": "Soundtoys",
+   "vendors": [
+    "soundtoys"
+   ],
+   "kind": "ilok",
+   "paths": [],
+   "hint": "Ліцензія в iLok License Manager (iLok або на комп'ютері), обліковий запис Soundtoys.",
+   "short": "iLok"
+  },
+  {
+   "label": "Slate Digital",
+   "vendors": [
+    "slatedigital",
+    "virtualmixrack",
+    "fgx"
+   ],
+   "kind": "ilok",
+   "paths": [],
+   "hint": "Ліцензія в iLok License Manager та в обліковому записі Slate Digital.",
+   "short": "iLok"
+  },
+  {
+   "label": "Eventide",
+   "vendors": [
+    "eventide"
+   ],
+   "kind": "ilok",
+   "paths": [],
+   "hint": "iLok License Manager та обліковий запис Eventide.",
+   "short": "iLok"
+  },
+  {
+   "label": "Avid (платні)",
+   "vendors": [
+    "avid",
+    "digidesign"
+   ],
+   "kind": "ilok",
+   "paths": [],
+   "hint": "iLok License Manager та обліковий запис Avid.",
+   "short": "iLok"
+  },
+  {
+   "label": "Sonnox",
+   "vendors": [
+    "sonnox"
+   ],
+   "kind": "ilok",
+   "paths": [],
+   "hint": "iLok License Manager.",
+   "short": "iLok"
+  },
+  {
+   "label": "Antares",
+   "vendors": [
+    "antares",
+    "autotune"
+   ],
+   "kind": "ilok",
+   "paths": [],
+   "hint": "iLok License Manager або обліковий запис Antares.",
+   "short": "iLok"
+  },
+  {
+   "label": "Softube",
+   "vendors": [
+    "softube"
+   ],
+   "kind": "ilok",
+   "paths": [],
+   "hint": "Softube Central, iLok License Manager.",
+   "short": "Softube Central"
+  },
+  {
+   "label": "Arturia",
+   "vendors": [
+    "arturia"
+   ],
+   "kind": "account",
+   "paths": [
+    "/Library/Arturia/*",
+    "~/Library/Application Support/Arturia/*"
+   ],
+   "hint": "Arturia Software Center, обліковий запис Arturia.",
+   "short": "Software Center"
+  },
+  {
+   "label": "Xfer Records (Serum)",
+   "vendors": [
+    "xfer",
+    "serum"
+   ],
+   "kind": "file",
+   "paths": [
+    "~/Library/Application Support/Xfer/*",
+    "/Library/Application Support/Xfer/*"
+   ],
+   "hint": "Серійник у листі від Xfer, обліковий запис Xfer.",
+   "short": "Серійник у листі"
+  },
+  {
+   "label": "Spectrasonics",
+   "vendors": [
+    "spectrasonics"
+   ],
+   "kind": "file",
+   "paths": [
+    "~/Library/Application Support/Spectrasonics/*",
+    "/Library/Application Support/Spectrasonics/*"
+   ],
+   "hint": "Spectrasonics Software Center / STEAM, обліковий запис Spectrasonics.",
+   "short": "Software Center"
+  },
+  {
+   "label": "u-he",
+   "vendors": [
+    "uhe"
+   ],
+   "kind": "file",
+   "paths": [
+    "~/Library/Application Support/u-he/*",
+    "/Library/Application Support/u-he/*"
+   ],
+   "hint": "Файл ключа (.u-he-act або .txt) з листа u-he; ключ лежить у теці Application Support/u-he.",
+   "short": "Файл ключа"
+  },
+  {
+   "label": "Valhalla DSP (безкоштовні)",
+   "vendors": [
+    "valhalla"
+   ],
+   "products": [
+    "valhallasupermassive",
+    "valhallafreqecho",
+    "valhallaspacemodulator"
+   ],
+   "kind": "free",
+   "paths": [],
+   "hint": "Безкоштовний плагін, ліцензія не потрібна.",
+   "short": "Безкоштовний"
+  },
+  {
+   "label": "Valhalla DSP",
+   "vendors": [
+    "valhalla"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Ліцензія в листі від Valhalla DSP; більшість плагінів вводить ключ усередині плагіна.",
+   "except_products": [
+    "valhallasupermassive",
+    "valhallafreqecho",
+    "valhallaspacemodulator"
+   ],
+   "short": "Ключ у листі"
+  },
+  {
+   "label": "Steinberg",
+   "vendors": [
+    "steinberg"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Steinberg Activation Manager / eLicenser, обліковий запис MySteinberg.",
+   "short": "Activation Manager"
+  },
+  {
+   "label": "Celemony (Melodyne)",
+   "vendors": [
+    "celemony"
+   ],
+   "kind": "account",
+   "paths": [
+    "/Users/Shared/Library/Application Support/Celemony/Licenses/*"
+   ],
+   "hint": "Активація всередині Melodyne, обліковий запис Celemony (My Account). Файл активації має бути в /Users/Shared/Library/Application Support/Celemony/Licenses.",
+   "short": "Активація в Melodyne"
+  },
+  {
+   "label": "Output",
+   "vendors": [
+    "output"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Output Hub, обліковий запис Output.",
+   "short": "Output Hub"
+  },
+  {
+   "label": "Toontrack",
+   "vendors": [
+    "toontrack"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Toontrack Product Manager, обліковий запис Toontrack.",
+   "short": "Product Manager"
+  },
+  {
+   "label": "Kilohearts",
+   "vendors": [
+    "kilohearts"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Kilohearts Installer, обліковий запис Kilohearts.",
+   "short": "Kilohearts Installer"
+  },
+  {
+   "label": "Reason Studios",
+   "vendors": [
+    "reasonstudios",
+    "propellerhead"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Reason Companion, обліковий запис Reason Studios.",
+   "short": "Reason Companion"
+  },
+  {
+   "label": "Sound Radix",
+   "vendors": [
+    "soundradix"
+   ],
+   "kind": "ilok",
+   "paths": [],
+   "hint": "iLok License Manager, обліковий запис iLok: плагін захищений PACE/iLok.",
+   "short": "iLok"
+  },
+  {
+   "label": "Klevgrand",
+   "vendors": [
+    "klevgrand"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Серійний номер вводиться всередині плагіна; шукайте лист від Klevgrand або магазину.",
+   "short": "Ключ у плагіні"
+  },
+  {
+   "label": "Youlean",
+   "vendors": [
+    "youlean"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Безкоштовна версія ліцензії не потребує; Pro активується ключем усередині плагіна (див. лист Youlean).",
+   "short": "Free чи Pro?"
+  },
+  {
+   "label": "Splice",
+   "vendors": [
+    "splice"
+   ],
+   "kind": "account",
+   "paths": [],
+   "hint": "Обліковий запис Splice: це інтеграція застосунку Splice з Pro Tools, окремого ключа на диску немає.",
+   "short": "Обліковий запис"
+  }
+ ]
+}

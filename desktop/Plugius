@@ -1,0 +1,47 @@
+#!/bin/bash
+# Plugius: запускає десктопну оболонку (Swift, збирається автоматично при першому запуску).
+DIR="$(cd "$(dirname "$0")" && pwd)"
+RES="$DIR/../Resources"
+BIN="$DIR/Plugius-bin"
+LOG="$HOME/Desktop/Plugius-build.log"
+
+notify() { /usr/bin/osascript -e "display notification \"$1\" with title \"Plugius\"" >/dev/null 2>&1; }
+
+if [ ! -x "$BIN" ] || [ "$RES/main.swift" -nt "$BIN" ]; then
+  if /usr/bin/xcode-select -p >/dev/null 2>&1 && [ -x /usr/bin/swiftc ]; then
+    notify "Перший запуск: збираю застосунок (до хвилини)…"
+    if /usr/bin/swiftc -O -swift-version 5 "$RES/main.swift" -o "$BIN.tmp" -framework Cocoa -framework WebKit >"$LOG" 2>&1; then
+      mv -f "$BIN.tmp" "$BIN"
+      /usr/bin/codesign -s - --force "$BIN" >/dev/null 2>&1
+      rm -f "$LOG"
+    else
+      rm -f "$BIN.tmp"
+    fi
+  fi
+fi
+
+if [ -x "$BIN" ]; then exec "$BIN"; fi
+
+# Запасний варіант: сервер + вікно браузера в режимі застосунку
+PY=""
+for c in /opt/homebrew/bin/python3 /usr/local/bin/python3 /usr/bin/python3; do
+  [ -x "$c" ] && PY="$c" && break
+done
+if [ -z "$PY" ]; then
+  /usr/bin/osascript -e 'display alert "Plugius" message "Не знайдено Python 3. Виконайте в Терміналі: xcode-select --install"' >/dev/null 2>&1
+  exit 1
+fi
+export PLUGINVAULT_PORT=8765 PYTHONDONTWRITEBYTECODE=1
+"$PY" "$RES/app/pluginvault.py" serve --no-browser &
+SRV=$!
+trap 'kill $SRV 2>/dev/null' EXIT TERM INT
+for i in $(seq 1 60); do
+  /usr/bin/curl -s http://127.0.0.1:8765/api/ping | grep -q pluginvault && break
+  sleep 0.25
+done
+if [ -d "/Applications/Google Chrome.app" ]; then
+  open -na "Google Chrome" --args --app=http://127.0.0.1:8765/ --user-data-dir="$HOME/Library/Application Support/PluginVault/chrome-profile"
+else
+  open http://127.0.0.1:8765/
+fi
+wait $SRV

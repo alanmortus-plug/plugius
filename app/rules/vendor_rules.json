@@ -1,0 +1,14 @@
+{
+ "_comment": "Єдині назви виробників. Ключ — назва малими літерами без пробілів і розділових знаків, уже без року та юридичної форми (GmbH, Inc, LLC…). Значення — як показувати. Їх можна редагувати й доповнювати.",
+ "aliases": {
+  "avidtechnology": "Avid",
+  "celemonysoftware": "Celemony",
+  "fabfilter": "FabFilter",
+  "fabfiltersoftwareinstruments": "FabFilter",
+  "izotope": "iZotope",
+  "soundradix": "Sound Radix",
+  "valhalladsp": "Valhalla DSP",
+  "wavesaudio": "Waves",
+  "xferrecords": "Xfer Records"
+ }
+}
