@@ -392,6 +392,12 @@ back = plistlib.loads(raw)
 check(back["Label"] == core.LABEL and back["StartCalendarInterval"]["Weekday"] == 1 and back["ProgramArguments"][1:3] == ["/x/pluginvault.py", "scan"],
       "plist валідний, раз на тиждень")
 check(core.schedule_install()["ok"] is False and core.schedule_status()["supported"] is False, "поза macOS розклад чесно відмовляє")
+tl = "/private/var/folders/0m/x/T/AppTranslocation/1B2B/d/Plugius.app/Contents/Resources"
+check("Програми" in (core.schedule_blocker(tl + "/python/bin/python3", tl + "/app/pluginvault.py") or ""),
+      "розклад із тимчасової копії (AppTranslocation) відхиляється з порадою перемістити в Програми")
+check(core.schedule_blocker("/usr/bin/python3", tl + "/app/pluginvault.py") is not None, "тимчасовий шлях скрипта теж відхиляється")
+check(core.schedule_blocker("/Applications/Plugius.app/Contents/Resources/python/bin/python3",
+                            "/Applications/Plugius.app/Contents/Resources/app/pluginvault.py") is None, "звичайний шлях дозволено")
 
 print("== 5. HTTP API")
 import pluginvault as pv

@@ -1430,9 +1430,22 @@ def schedule_status():
     return {"supported": IS_MAC, "installed": installed, "loaded": loaded, "plist": p}
 
 
+def schedule_blocker(python, script):
+    """Причина не вмикати розклад або None. Застосунок, відкритий просто після розпакування,
+    macOS запускає з тимчасової копії (AppTranslocation), яка зникає після перезапуску."""
+    if any("/AppTranslocation/" in p for p in (python, script)):
+        return ("Plugius запущено з тимчасової копії, тож автоскан зламається після перезапуску Mac. "
+                "Перемістіть Plugius.app у Програми, відкрийте звідти й увімкніть автоскан знову.")
+    return None
+
+
 def schedule_install():
     if not IS_MAC:
         return {"ok": False, "error": "Розклад (launchd) доступний лише на macOS"}
+    pa = schedule_plist()["ProgramArguments"]
+    err = schedule_blocker(pa[0], pa[1])
+    if err:
+        return {"ok": False, "error": err}
     p = plist_path()
     os.makedirs(os.path.dirname(p), exist_ok=True)
     ensure_home()

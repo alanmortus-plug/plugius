@@ -534,7 +534,7 @@ async function renderSettings() {
     ${/PlugiusApp/.test(navigator.userAgent) ? "" : '<div class="row-actions"><button id="quit">Вимкнути застосунок</button></div>'}</div>`;
   document.querySelectorAll('input[name=mode]').forEach(r => r.onchange = async () => { await api("/api/settings", {method: "POST", body: {scan_mode: r.value}}); toast("Збережено"); });
   const on = $("#schOn"), off = $("#schOff");
-  if (on) on.onclick = async () => { try { await api("/api/schedule", {method: "POST", body: {enable: true}}); toast("Автоскан увімкнено"); renderSettings(); } catch (e) { toast(e.message); } };
+  if (on) on.onclick = async () => { try { await api("/api/schedule", {method: "POST", body: {enable: true}}); toast("Автоскан увімкнено"); renderSettings(); } catch (e) { alert(e.message); renderSettings(); } };
   if (off) off.onclick = async () => { await api("/api/schedule", {method: "POST", body: {enable: false}}); toast("Автоскан вимкнено"); renderSettings(); };
   if ($("#quit")) $("#quit").onclick = async () => { if (confirm("Вимкнути Plugius? Дані збережуться.")) { try { await api("/api/quit", {method: "POST", body: {}}); } catch (e) {} document.body.innerHTML = '<div class="empty" style="margin:40px">Plugius вимкнено. Закрийте цю вкладку.</div>'; } };
 }
