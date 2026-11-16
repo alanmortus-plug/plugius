@@ -15,7 +15,7 @@ import plistlib
 from datetime import datetime, timezone
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "0.7.8"
+VERSION = "0.8.0"
 IS_MAC = sys.platform == "darwin"
 
 
