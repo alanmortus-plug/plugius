@@ -1,5 +1,7 @@
 #!/bin/bash
-# Plugius: запускає десктопну оболонку (Swift, збирається автоматично при першому запуску).
+# Plugius: запускає готову десктопну оболонку (Swift, універсальний бінарник із вбудованим Python).
+# Якщо бінарника немає або він не запускається, пробує зібрати його (потрібні Command Line Tools),
+# а далі запасний шлях: сервер + вікно браузера.
 DIR="$(cd "$(dirname "$0")" && pwd)"
 RES="$DIR/../Resources"
 BIN="$DIR/Plugius-bin"
@@ -7,28 +9,39 @@ LOG="$HOME/Desktop/Plugius-build.log"
 
 notify() { /usr/bin/osascript -e "display notification \"$1\" with title \"Plugius\"" >/dev/null 2>&1; }
 
-if [ ! -x "$BIN" ] || [ "$RES/main.swift" -nt "$BIN" ]; then
-  if /usr/bin/xcode-select -p >/dev/null 2>&1 && [ -x /usr/bin/swiftc ]; then
-    notify "Перший запуск: збираю застосунок (до хвилини)…"
-    if /usr/bin/swiftc -O -swift-version 5 "$RES/main.swift" -o "$BIN.tmp" -framework Cocoa -framework WebKit >"$LOG" 2>&1; then
-      mv -f "$BIN.tmp" "$BIN"
-      /usr/bin/codesign -s - --force "$BIN" >/dev/null 2>&1
-      rm -f "$LOG"
-    else
-      rm -f "$BIN.tmp"
-    fi
+# Перший придатний Python зі списку. /usr/bin/python3 без Command Line Tools лише заглушка,
+# що пропонує їх встановити, тож береться тільки коли вони є.
+pick_python() {
+  local c
+  for c in "$@"; do
+    [ -x "$c" ] || continue
+    if [ "$c" = /usr/bin/python3 ] && ! /usr/bin/xcode-select -p >/dev/null 2>&1; then continue; fi
+    echo "$c"
+    return 0
+  done
+  return 1
+}
+
+# Невдалий exec (наприклад, бінарник не для цього процесора) не завершує скрипт
+shopt -s execfail
+if [ -x "$BIN" ]; then exec "$BIN"; fi
+
+if /usr/bin/xcode-select -p >/dev/null 2>&1 && [ -x /usr/bin/swiftc ]; then
+  notify "Збираю вікно застосунку (до хвилини)…"
+  if /usr/bin/swiftc -O -swift-version 5 "$RES/main.swift" -o "$BIN.tmp" -framework Cocoa -framework WebKit >"$LOG" 2>&1; then
+    mv -f "$BIN.tmp" "$BIN"
+    /usr/bin/codesign -s - --force "$BIN" >/dev/null 2>&1
+    rm -f "$LOG"
+    exec "$BIN"
+  else
+    rm -f "$BIN.tmp"
   fi
 fi
 
-if [ -x "$BIN" ]; then exec "$BIN"; fi
-
 # Запасний варіант: сервер + вікно браузера в режимі застосунку
-PY=""
-for c in /opt/homebrew/bin/python3 /usr/local/bin/python3 /usr/bin/python3; do
-  [ -x "$c" ] && PY="$c" && break
-done
+PY="$(pick_python "$RES/python/bin/python3" /opt/homebrew/bin/python3 /usr/local/bin/python3 /usr/bin/python3)"
 if [ -z "$PY" ]; then
-  /usr/bin/osascript -e 'display alert "Plugius" message "Не знайдено Python 3. Виконайте в Терміналі: xcode-select --install"' >/dev/null 2>&1
+  /usr/bin/osascript -e 'display alert "Plugius" message "Не знайдено Python 3. Завантажте застосунок заново або виконайте в Терміналі: xcode-select --install"' >/dev/null 2>&1
   exit 1
 fi
 export PLUGINVAULT_PORT=8765 PYTHONDONTWRITEBYTECODE=1

@@ -58,16 +58,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         }.resume()
     }
 
+    // Спершу вбудований Python, потім Homebrew, системний лише з Command Line Tools
+    // (без них /usr/bin/python3 — заглушка, що пропонує їх встановити).
     func findPython() -> String? {
-        for p in ["/opt/homebrew/bin/python3", "/usr/local/bin/python3", "/usr/bin/python3"] {
-            if FileManager.default.isExecutableFile(atPath: p) { return p }
+        let embedded = Bundle.main.resourceURL!.appendingPathComponent("python/bin/python3").path
+        for p in [embedded, "/opt/homebrew/bin/python3", "/usr/local/bin/python3", "/usr/bin/python3"] {
+            guard FileManager.default.isExecutableFile(atPath: p) else { continue }
+            if p == "/usr/bin/python3" && !hasCommandLineTools() { continue }
+            return p
         }
         return nil
     }
 
+    func hasCommandLineTools() -> Bool {
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/usr/bin/xcode-select")
+        p.arguments = ["-p"]
+        p.standardOutput = FileHandle.nullDevice
+        p.standardError = FileHandle.nullDevice
+        do { try p.run() } catch { return false }
+        p.waitUntilExit()
+        return p.terminationStatus == 0
+    }
+
     func startServer() {
         guard let py = findPython() else {
-            web.loadHTMLString(page("Не знайдено Python 3", detail: "Відкрийте Термінал і виконайте: xcode-select --install\nПотім запустіть Plugius ще раз."), baseURL: nil)
+            web.loadHTMLString(page("Не знайдено Python 3", detail: "Вбудований Python відсутній: завантажте застосунок заново.\nАбо відкрийте Термінал, виконайте xcode-select --install і запустіть Plugius ще раз."), baseURL: nil)
             return
         }
         let res = Bundle.main.resourceURL!.appendingPathComponent("app")

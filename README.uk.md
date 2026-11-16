@@ -24,17 +24,19 @@
 ## Вимоги
 
 - macOS 11.3 або новіша, Apple Silicon чи Intel.
-- Command Line Tools від Apple (поки що): `xcode-select --install`.
+- Для запуску більше нічого: застосунок має власний Python і готове універсальне вікно, Command Line Tools не потрібні.
+- Для власної збірки: Command Line Tools (`xcode-select --install`) і разове завантаження Python, близько 50 МБ.
 
 ## Запуск
 
 ```bash
 git clone https://github.com/alanmortus-plug/plugius.git
 cd plugius
+python3 tools/fetch_python.py   # один раз: Python 3.13 для Apple Silicon і Intel, з перевіркою SHA-256
 python3 tools/build_app.py
 ```
 
-Розпакуй `dist/Plugius-app.zip` і відкрий `Plugius.app`. Перший запуск збирає вікно, до хвилини. Якщо macOS блокує застосунок: правий клік → Відкрити, або
+`dist/Plugius-app.zip` (близько 18 МБ) і є весь застосунок: розпакуй і відкрий `Plugius.app`. Застосунок не нотаризований, тож уперше macOS його не відкриє: Системні параметри → Приватність і безпека, унизу «Все одно відкрити» біля повідомлення про Plugius. Або
 
 ```bash
 xattr -dr com.apple.quarantine Plugius.app

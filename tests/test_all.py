@@ -470,6 +470,81 @@ s, b = req("/api/scan", "POST", {"mode": "bogus"})
 check(s == 400, "невідомий режим відхилено")
 srv.shutdown()
 
+print("== Збірка застосунку: вбудований Python і лаунчер")
+import subprocess
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
+import build_app
+
+check(build_app.prune_python("lib/python3.13/tkinter/__init__.py"), "tkinter прибирається")
+check(build_app.prune_python("lib/libtcl9.0.dylib"), "бібліотеки Tcl/Tk прибираються")
+check(build_app.prune_python("lib/python3.13/lib-dynload/_tkinter.cpython-313-darwin.so"), "_tkinter.so прибирається")
+check(build_app.prune_python("lib/python3.13/site-packages/pip/__init__.py"), "pip прибирається")
+check(build_app.prune_python("lib/python3.13/encodings/__pycache__/utf_8.cpython-313.pyc"), "__pycache__ прибирається")
+check(build_app.prune_python("include/python3.13/pyconfig.h"), "include прибирається")
+check(build_app.prune_python("bin/pip3"), "зайві команди в bin прибираються")
+check(not build_app.prune_python("bin/python3.13"), "бінарник python лишається")
+check(not build_app.prune_python("bin/python3"), "посилання python3 лишається")
+check(not build_app.prune_python("lib/python3.13/sqlite3/__init__.py"), "sqlite3 лишається")
+check(not build_app.prune_python("lib/python3.13/http/server.py"), "http.server лишається")
+check(not build_app.prune_python("lib/python3.13/lib-dynload/_dbm.cpython-313-darwin.so"), "інші модулі lib-dynload лишаються")
+
+pyt = os.path.join(tmp, "pybuild")
+MACHO = b"\xcf\xfa\xed\xfe" + b"\0" * 60
+for arch in ("arm64", "x86_64"):
+    r = os.path.join(pyt, arch)
+    os.makedirs(os.path.join(r, "bin"))
+    os.makedirs(os.path.join(r, "lib", "python3.13", "idlelib"))
+    open(os.path.join(r, "bin", "python3.13"), "wb").write(MACHO + arch.encode())
+    os.symlink("python3.13", os.path.join(r, "bin", "python3"))
+    open(os.path.join(r, "lib", "python3.13", "os.py"), "w").write("# os " + arch)
+    open(os.path.join(r, "lib", "python3.13", "idlelib", "x.py"), "w").write("")
+lipo_calls = []
+
+
+def fake_lipo(a, b, out):
+    lipo_calls.append((a, b))
+    open(out, "wb").write(b"UNIVERSAL")
+
+
+dest = os.path.join(pyt, "out")
+build_app.assemble_python(os.path.join(pyt, "arm64"), os.path.join(pyt, "x86_64"), dest, lipo=fake_lipo)
+check(open(os.path.join(dest, "bin", "python3.13"), "rb").read() == b"UNIVERSAL", "Mach-O склеєно lipo")
+check(len(lipo_calls) == 1 and lipo_calls[0][1].endswith(os.path.join("x86_64", "bin", "python3.13")),
+      "lipo отримує пару arm64 + x86_64")
+check(os.path.islink(os.path.join(dest, "bin", "python3")) and os.readlink(os.path.join(dest, "bin", "python3")) == "python3.13",
+      "відносне посилання збережено")
+check(open(os.path.join(dest, "lib", "python3.13", "os.py")).read() == "# os arm64", "звичайні файли копіюються")
+check(not os.path.exists(os.path.join(dest, "lib", "python3.13", "idlelib")), "прибрані теки не копіюються")
+check(build_app.macho_files(os.path.join(pyt, "arm64")) == [os.path.join(pyt, "arm64", "bin", "python3.13")],
+      "Mach-O знаходяться за сигнатурою, посилання пропускаються")
+os.remove(os.path.join(pyt, "x86_64", "bin", "python3.13"))
+try:
+    build_app.assemble_python(os.path.join(pyt, "arm64"), os.path.join(pyt, "x86_64"), dest + "2", lipo=fake_lipo)
+    check(False, "немає пари x86_64 для Mach-O: помилка")
+except build_app.BuildError:
+    check(True, "немає пари x86_64 для Mach-O: помилка")
+
+
+def launcher_pick(*cands):
+    src = open(os.path.join(os.path.dirname(HERE), "desktop", "Plugius")).read()
+    fn = src[src.index("pick_python() {"):]
+    fn = fn[:fn.index("\n}\n") + 3]
+    p = subprocess.run(["/bin/bash", "-c", fn + 'pick_python "$@"', "x"] + list(cands),
+                       stdout=subprocess.PIPE, universal_newlines=True)
+    return p.returncode, p.stdout.strip()
+
+
+fakebin = os.path.join(tmp, "fakebin")
+os.makedirs(fakebin)
+emb, brew = os.path.join(fakebin, "embedded"), os.path.join(fakebin, "brew")
+for f in (emb, brew):
+    open(f, "w").write("#!/bin/sh\n")
+    os.chmod(f, 0o755)
+missing = os.path.join(fakebin, "missing")
+check(launcher_pick(emb, brew) == (0, emb), "лаунчер бере вбудований Python першим")
+check(launcher_pick(missing, brew) == (0, brew), "без вбудованого лаунчер бере наступний")
+check(launcher_pick(missing)[0] != 0, "без жодного Python лаунчер повертає помилку")
+
 print()
 if fails:
     print("ПРОВАЛЕНО: %d" % len(fails))

@@ -11,3 +11,10 @@ Full license texts, copied verbatim from the font projects:
 
 - [licenses/OFL-SofiaSans.txt](licenses/OFL-SofiaSans.txt), from https://github.com/lettersoup/Sofia-Sans
 - [licenses/OFL-IBMPlex.txt](licenses/OFL-IBMPlex.txt), from https://github.com/IBM/plex
+
+## Embedded Python
+
+`Plugius.app` bundles CPython 3.13.18 from [python-build-standalone](https://github.com/astral-sh/python-build-standalone) (release 20261026, `install_only_stripped`, Apple Silicon and Intel merged into one universal build). It is not part of this repository: `tools/fetch_python.py` downloads it at build time and checks its SHA-256.
+
+- CPython is licensed under the Python Software Foundation License; the full text, including the licenses of components CPython itself contains, ships inside the app at `Contents/Resources/python/lib/python3.13/LICENSE.txt`.
+- python-build-standalone links further libraries statically into the interpreter (among them OpenSSL under Apache-2.0, SQLite in the public domain, libffi, XZ Utils, bzip2, mpdecimal and Expat under permissive licenses). The list and their licenses are documented at https://gregoryszorc.com/docs/python-build-standalone/main/running.html#licensing.

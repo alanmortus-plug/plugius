@@ -33,7 +33,8 @@ Plugius is a young personal project. It works on the author's Mac every day, but
 ## Requirements
 
 - macOS 11.3 or later, Apple Silicon or Intel.
-- Command Line Tools for Xcode (for now): `xcode-select --install`. The app uses the system `python3` and compiles its window on first launch. A self-contained build that runs without them is planned.
+- Nothing else to run the app: it ships its own Python and a prebuilt universal window, so Command Line Tools are not needed.
+- To build it yourself: Command Line Tools for Xcode (`xcode-select --install`) and about 50 MB to download Python once.
 
 ## Run it
 
@@ -42,12 +43,13 @@ Build the app:
 ```bash
 git clone https://github.com/alanmortus-plug/plugius.git
 cd plugius
+python3 tools/fetch_python.py   # once: downloads Python 3.13 for Apple Silicon and Intel, checks SHA-256
 python3 tools/build_app.py
 ```
 
-Unzip `dist/Plugius-app.zip`, move `Plugius.app` wherever you like and open it. The first launch takes up to a minute while the window is compiled.
+`dist/Plugius-app.zip` (about 18 MB) is the whole app. Unzip it, move `Plugius.app` wherever you like and open it.
 
-The app is not signed by Apple, so macOS may refuse to open it. Either right-click it and choose Open, or run:
+The app is not notarized by Apple, so the first time macOS refuses to open it. Open System Settings → Privacy & Security, scroll down and click Open Anyway next to the message about Plugius. Or run:
 
 ```bash
 xattr -dr com.apple.quarantine Plugius.app
@@ -67,7 +69,7 @@ Everything lives in `~/Library/Application Support/PluginVault/`: the database, 
 
 ## How it works
 
-Python 3 with the standard library only, SQLite, and a small local web server. The interface is a single HTML file, and the desktop window is a thin Swift `WKWebView` shell. No dependencies, no network access.
+Python 3 with the standard library only (the app bundles its own Python 3.13 from [python-build-standalone](https://github.com/astral-sh/python-build-standalone)), SQLite, and a small local web server. The interface is a single HTML file, and the desktop window is a thin Swift `WKWebView` shell. No dependencies, no network access.
 
 ## Contributing
 
