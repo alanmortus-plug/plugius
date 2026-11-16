@@ -30,38 +30,30 @@ After a few years of music production, nobody remembers which vendor account a p
 
 Plugius is a young personal project. It works on the author's Mac every day, but it has not been tested on many other machines yet. The licence locations are verified only for a handful of vendors; the rest are best guesses, and you can correct them in the rules files.
 
-## Requirements
+## Install
 
-- macOS 11.3 or later, Apple Silicon or Intel.
-- Nothing else to run the app: it ships its own Python and a prebuilt universal window, so Command Line Tools are not needed.
-- To build it yourself: Command Line Tools for Xcode (`xcode-select --install`) and about 50 MB to download Python once.
+1. Download `Plugius-app.zip` from the [latest release](https://github.com/alanmortus-plug/plugius/releases/latest) (about 18 MB). You need macOS 11.3 or later, Apple Silicon or Intel. Nothing else: the app ships its own Python.
+2. Unzip it and move `Plugius.app` to Applications. Do this before the first launch, otherwise the weekly scan cannot be turned on.
+3. Open it. The app is not notarized by Apple, so macOS blocks the first launch:
+   - macOS 13 and later: open System Settings → Privacy & Security, scroll down and click Open Anyway next to the message about Plugius.
+   - macOS 12 and earlier: right-click `Plugius.app` → Open, then Open again in the dialog.
 
-## Run it
+   This is needed only once.
 
-Build the app:
+## Build from source
+
+You need Command Line Tools for Xcode (`xcode-select --install`). Python for the app (about 50 MB) is downloaded once and checked against pinned SHA-256 hashes.
 
 ```bash
 git clone https://github.com/alanmortus-plug/plugius.git
 cd plugius
-python3 tools/fetch_python.py   # once: downloads Python 3.13 for Apple Silicon and Intel, checks SHA-256
+python3 tools/fetch_python.py
 python3 tools/build_app.py
 ```
 
-`dist/Plugius-app.zip` (about 18 MB) is the whole app. Unzip it, move `Plugius.app` wherever you like and open it.
+The app is in `dist/Plugius.app`, the archive in `dist/Plugius-app.zip`.
 
-The app is not notarized by Apple, so the first time macOS refuses to open it. Open System Settings → Privacy & Security, scroll down and click Open Anyway next to the message about Plugius. Or run:
-
-```bash
-xattr -dr com.apple.quarantine Plugius.app
-```
-
-Or run it in your browser without building anything:
-
-```bash
-python3 app/pluginvault.py serve
-```
-
-and open http://127.0.0.1:8765.
+Or run it in your browser without building anything: `python3 app/pluginvault.py serve` and open http://127.0.0.1:8765.
 
 ## Your data
 

@@ -21,26 +21,28 @@
 - **Штатні плагіни** Logic Pro та Pro Tools сховані, є фільтр «Штатні плагіни програм».
 - **Автоскан раз на тиждень** (launchd) і експорт у CSV.
 
-## Вимоги
+## Встановлення
 
-- macOS 11.3 або новіша, Apple Silicon чи Intel.
-- Для запуску більше нічого: застосунок має власний Python і готове універсальне вікно, Command Line Tools не потрібні.
-- Для власної збірки: Command Line Tools (`xcode-select --install`) і разове завантаження Python, близько 50 МБ.
+1. Завантаж `Plugius-app.zip` з [останнього релізу](https://github.com/alanmortus-plug/plugius/releases/latest) (близько 18 МБ). Потрібна macOS 11.3 або новіша, Apple Silicon чи Intel. Більше нічого: застосунок має власний Python.
+2. Розпакуй і перетягни `Plugius.app` у Програми. Зроби це до першого запуску, інакше тижневий автоскан не ввімкнеться.
+3. Відкрий. Застосунок не нотаризований Apple, тож перше відкриття macOS блокує:
+   - macOS 13 і новіші: Системні параметри → Приватність і безпека, унизу «Все одно відкрити» біля повідомлення про Plugius.
+   - macOS 12 і старіші: правий клік на `Plugius.app` → Відкрити, і ще раз «Відкрити» у вікні.
 
-## Запуск
+   Це потрібно лише один раз.
+
+## Збирання з коду
+
+Потрібні Command Line Tools (`xcode-select --install`). Python для застосунку (близько 50 МБ) завантажується один раз і перевіряється за закріпленими SHA-256.
 
 ```bash
 git clone https://github.com/alanmortus-plug/plugius.git
 cd plugius
-python3 tools/fetch_python.py   # один раз: Python 3.13 для Apple Silicon і Intel, з перевіркою SHA-256
+python3 tools/fetch_python.py
 python3 tools/build_app.py
 ```
 
-`dist/Plugius-app.zip` (близько 18 МБ) і є весь застосунок: розпакуй і відкрий `Plugius.app`. Застосунок не нотаризований, тож уперше macOS його не відкриє: Системні параметри → Приватність і безпека, унизу «Все одно відкрити» біля повідомлення про Plugius. Або
-
-```bash
-xattr -dr com.apple.quarantine Plugius.app
-```
+Застосунок буде в `dist/Plugius.app`, архів у `dist/Plugius-app.zip`.
 
 Веб-версія без збирання: `python3 app/pluginvault.py serve`, далі http://127.0.0.1:8765.
 
