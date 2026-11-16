@@ -162,8 +162,10 @@ def main():
     zpath = os.path.join(DIST, "Plugius-app.zip")
     if os.path.exists(zpath):
         os.remove(zpath)
-    # ditto зберігає права, посилання й підписи (zipfile посилань не тримає)
-    run(["ditto", "-c", "-k", "--keepParent", APP, zpath])
+    # ditto зберігає права й посилання (zipfile посилань не тримає). Без розширених атрибутів:
+    # інакше в архів потрапляють службові файли ._* (com.apple.provenance тощо).
+    # Підписи Mach-O вбудовані у файли, тож атрибути для них не потрібні.
+    run(["ditto", "-c", "-k", "--norsrc", "--noextattr", "--noacl", "--keepParent", APP, zpath])
     print("OK:", zpath)
 
 
